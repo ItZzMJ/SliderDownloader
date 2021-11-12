@@ -68,6 +68,13 @@ class SpotifyAPI:
             # get genre
             genre = self.get_genre(song)
 
+            # get year
+            try:
+                year = song['track']['album']['release_date'].split('-')[0]
+            except:
+                year = None
+
+
             artists = []
             for artist in song['track']['artists']:
                 artists.append(artist['name'])
@@ -77,9 +84,9 @@ class SpotifyAPI:
         return tracks
 
 # TODO: remove
-# playlist = "https://open.spotify.com/playlist/1B0gmbwIiJBkpFslXZBsZw?si=7c2fc17f99294cc8"
-# api = SpotifyAPI()
-# y = api.get_playlist_tracks(url=playlist)
+playlist = "https://open.spotify.com/playlist/1B0gmbwIiJBkpFslXZBsZw?si=7c2fc17f99294cc8"
+api = SpotifyAPI()
+y = api.get_playlist_tracks(url=playlist)
 #
 # for track in y:
 #     print(f"{track.name} - {track.print_artists()} | {track.genre} | {track.artwork_url}")

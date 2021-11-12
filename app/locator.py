@@ -7,6 +7,7 @@ class SearchPageLocators(object):
     TRACK_TIME = (By.CLASS_NAME, "trackTime")
     INFORMER = (By.ID, "informer")
     A_TAG = (By.TAG_NAME, "a")
+    PRELOADER = (By.CSS_SELECTOR, "#informer > img")
 
 
 

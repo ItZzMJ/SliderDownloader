@@ -2,7 +2,6 @@ import random
 import string
 import shutil
 from mutagen.mp3 import HeaderNotFoundError
-from track import Track
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import urllib.parse
@@ -26,6 +25,8 @@ class Downloader:
         if not os.path.isdir(self.artwork_dir):
             os.mkdir(self.artwork_dir)
 
+        self.debug = []
+
         # set chrome options
         options = webdriver.ChromeOptions()
         options.add_experimental_option("useAutomationExtension", False)
@@ -47,34 +48,45 @@ class Downloader:
             options.add_argument("--headless")
             options.add_argument("--disable-gpu")
 
+        # disable Webdriver Manager output
+        os.environ['WDM_LOG_LEVEL'] = '0'
+
         self.driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
         self.driver.set_window_position(2000, 0)
         self.driver.maximize_window()
 
         self.url = "https://slider.kz/"
+        print("Setup complete")
+        self.debug.append("Setup complete")
 
     # download tracks
-    def download(self, tracks):
+    def download(self, tracks, progress_bar=None):
+        i = 0
         for track in tracks:
+            i += 1
             try:
-                print("GETTING " + track.print_filename())
                 self.download_track(track)
+                if progress_bar:
+                    progress_bar.update_bar((i/tracks.len())*1000)
             except NameError as err:
-                print("NAME ERROR:", end=' ')
+                print("[ERR] NAME ERROR:", end=' ')
                 print(err)
+                self.debug.append(f"[ERR] NAME ERROR: {err}")
+
                 self.driver.get(self.url)
-                sleep(5)
+                # sleep(5)
                 continue
 
         shutil.rmtree(self.artwork_dir)
+        return self.debug
 
     # download one track
     def download_track(self, track):
         driver = self.driver
 
         # build query url and encode it
-        url = self.url + "#" + urllib.parse.quote(track.name + " " + ", ".join(track.artists))
+        url = self.url + "#" + urllib.parse.quote(", ".join(track.artists) + " " + track.name)
         driver.get(url)
         driver.refresh()  # refresh in case site gets stuck on a not found song
 
@@ -84,23 +96,27 @@ class Downloader:
         search_page.hide_popup()
 
         # get download link
-        print("Getting Download link")
+        print("[LOG] Getting Download link")
+        self.debug.append("[LOG] Getting Download link")
         dl_link = search_page.get_dl_link()
 
         # download_file
-        print("Downloading " + track.print_filename())
-        filename = wget.download(dl_link, out=self.output_dir)
+        print("[LOG] Downloading " + track.print_filename())
+        self.debug.append("[LOG] Downloading " + track.print_filename())
+        filename = wget.download(dl_link, out=self.output_dir, bar=False)
 
         # download artwork
-        print("\nDownloading artwork")
-
+        print("[LOG] Downloading artwork")
+        self.debug.append("[LOG] Downloading artwork")
         artwork = self.get_artwork(track)
 
         # set metadata and rename file
-        print("\nSetting metadata")
+        print("[LOG] Setting metadata")
+        self.debug.append("[LOG] Setting metadata")
         self.set_metadata(track, filename, artwork)
 
-        print(track.print_filename() + " finished!")
+        print(f"[LOG] {track.print_filename()} finished!")
+        self.debug.append(f"[LOG] {track.print_filename()} finished!")
         return track.print_filename()
 
     # set metadata of mp3 like title, artist, etc.
@@ -112,6 +128,7 @@ class Downloader:
             mp3['title'] = track.name
             mp3['artist'] = ", ".join(track.artists)
             mp3['genre'] = track.genre
+            mp3['year'] = track.year
 
             # read artwork as bytes
             with open(artwork_file, 'rb') as img_in:
@@ -122,13 +139,14 @@ class Downloader:
         # delete corrupted mp3's
         except HeaderNotFoundError as err:
             print("[ERR] Corrupted MP3!! deleting...:" + track.print_filename())
-            os.remove(file)
+            self.debug.append("[ERR] Corrupted MP3!! deleting...:" + track.print_filename())
+            #os.remove(file)
 
         self.rename_file(track, filename)
 
     # download and rename artwork
     def get_artwork(self, track):
-        artwork = wget.download(track.artwork_url, out=self.artwork_dir)
+        artwork = wget.download(track.artwork_url, out=self.artwork_dir, bar=False)
         artwork_file = os.path.join(self.artwork_dir, artwork)
         new_artwork_filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
         new_artwork_file = os.path.join(self.artwork_dir, new_artwork_filename + ".jpg")
@@ -136,15 +154,12 @@ class Downloader:
 
         return new_artwork_file
 
-
     # rename file
     def rename_file(self, track, filename):
         file = os.path.join(self.output_dir, filename)
         new_filename = track.print_filename()
         new_file = os.path.join(self.output_dir, new_filename)
         os.rename(file, new_file)
-
-
 
     def tear_down(self):
         self.driver.quit()

@@ -71,13 +71,18 @@ class SearchPage(BasePage):
 
             # wait till informer element is completly loaded
             try:
-                WebDriverWait(driver, 4).until(
+                WebDriverWait(driver, 4).until( # until '<img src="/media/images/preload.gif">' is away
                     EC.text_to_be_present_in_element(SearchPageLocators.INFORMER, "Bitrate"))
+                    #EC.invisibility_of_element_located(SearchPageLocators.PRELOADER))
             except TimeoutException:
                 i += 1
                 continue  # if Informer stays empty check next element
 
+            sleep(0.1)
             bitrate_elem = driver.find_element(*SearchPageLocators.INFORMER)
+
+            if not bitrate_elem.text:  # if informer is empty
+                continue
 
             # extract bitrate
             bitrate = int(re.search(r'\d+', bitrate_elem.text.split(":")[1]).group(0))
