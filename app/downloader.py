@@ -68,7 +68,7 @@ class Downloader:
             try:
                 self.download_track(track)
                 if progress_bar:
-                    progress_bar.update_bar((i/tracks.len())*1000)
+                    progress_bar.update_bar((i/len(tracks)*1000))
             except NameError as err:
                 print("[ERR] NAME ERROR:", end=' ')
                 print(err)
