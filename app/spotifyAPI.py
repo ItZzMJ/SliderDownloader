@@ -79,7 +79,7 @@ class SpotifyAPI:
             for artist in song['track']['artists']:
                 artists.append(artist['name'])
 
-            tracks.append(Track(name=name, artists=artists, genre=genre, artwork_url=img_url))
+            tracks.append(Track(name=name, artists=artists, genre=genre, artwork_url=img_url, year=year))
 
         return tracks
 
