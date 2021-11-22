@@ -8,15 +8,16 @@ import os
 
 class SpotifyAPI:
     def __init__(self):
-        load_dotenv(".env")
+        self.client_id = "cdf4ed28ce6242c79dae19287a545c4b"
+        self.client_secret = "794b355f9e6d4f7285ed476ee6108125"
         self.credentials = self.get_credentials()
         self.spotify = spotipy.Spotify(client_credentials_manager=self.credentials)
 
     # login
     def get_credentials(self):
         return SpotifyClientCredentials(
-            client_id=os.getenv("SP_CLIENT_ID"),
-            client_secret=os.getenv("SP_SECRET"))
+            client_id=self.client_id,
+            client_secret=self.client_secret)
 
     # get name of playlist
     def get_playlist_name(self, url):

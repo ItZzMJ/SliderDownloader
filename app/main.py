@@ -1,4 +1,5 @@
 import json
+import sys
 import traceback
 from json import JSONDecodeError
 
@@ -16,6 +17,8 @@ class Main:
     def __init__(self):
         self.url = "https://open.spotify.com/playlist/3rAF2TSX5OEaizE6o8op34?si=59c270ab42004510"
         self.debug = []
+        self.show_chrome = False
+        self.save_debug = False
 
     def loop(self):
         settings = self.load_settings()
@@ -23,7 +26,7 @@ class Main:
         url = settings['url']
 
         layout = self.get_layout(output_dir, url)
-        window = sg.Window('Slider Downloader', layout)
+        window = sg.Window('Slider Downloader v1.0', layout)
 
         # Main Loop
         try:
@@ -32,7 +35,7 @@ class Main:
 
                 # exit button clicked
                 if event == sg.WINDOW_CLOSED or event == 'Exit':
-                    break
+                    exit(-1)
 
                 # download button clicked
                 elif event == 'Download':
@@ -50,7 +53,7 @@ class Main:
 
                     # if all tests pass, start download
                     else:
-                        show_chrome = values['-SHOWCHROME-']
+                        self.show_chrome = values['-SHOWCHROME-']
                         output_dir = values['-FOLDER-']
                         url = values['-LINK-']
 
@@ -61,9 +64,9 @@ class Main:
                             progress_bar = window['-PROGRESS BAR-']
 
                             # start thread
-                            #thread = threading.Thread(target=self.run, args=(url, output_dir))
-                            #thread.start()
-                            self.run(url, output_dir, progress_bar)
+                            thread = threading.Thread(target=self.run, args=(url, output_dir, progress_bar), daemon=True)
+                            thread.start()
+                            #self.run(url, output_dir, progress_bar)
 
                         except Exception as e:
                             print(f"[ERR] {e}")
@@ -93,7 +96,8 @@ class Main:
             self.debug.append("[LOG] Exiting..")
             window['-OUTPUT-'].__del__()
             window.close()
-            self.print_debug()
+            if self.save_debug:
+                self.print_debug()
 
     def run(self, url, output_dir, progress_bar=None):
         # set configs through gui
@@ -152,7 +156,7 @@ class Main:
 
     # save output_dir and url
     def save_settings(self, result_dir, url):
-        file = "settings.json"
+        file = "slider_settings.json"
 
         #if os.path.isfile(file):
         #    os.remove(file)
@@ -167,7 +171,7 @@ class Main:
 
     # load previous output_dir and url
     def load_settings(self):
-        file = "settings.json"
+        file = "slider_settings.json"
         if not os.path.isfile(file):
             return {'result_dir': '', 'url': ''}
 
@@ -266,7 +270,7 @@ class Main:
 
     # Threading function for downloading
     def download(self, tracks, playlist_dir, progress_bar=None):
-        downloader = Downloader(playlist_dir, True)
+        downloader = Downloader(playlist_dir, self.show_chrome)
         try:
             download_log = downloader.download(tracks, progress_bar)
         finally:

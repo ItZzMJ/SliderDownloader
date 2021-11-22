@@ -57,8 +57,8 @@ class Downloader:
         self.driver.maximize_window()
 
         self.url = "https://slider.kz/"
-        print("Setup complete")
-        self.debug.append("Setup complete")
+        print("[LOG] Setup complete")
+        self.debug.append("[LOG] Setup complete")
 
     # download tracks
     def download(self, tracks, progress_bar=None):
@@ -131,10 +131,11 @@ class Downloader:
             mp3['year'] = track.year
 
             # read artwork as bytes
-            with open(artwork_file, 'rb') as img_in:
-                mp3['artwork'] = img_in.read()
-            # save metadata
-            mp3.save()
+            if artwork_file:
+                with open(artwork_file, 'rb') as img_in:
+                    mp3['artwork'] = img_in.read()
+                # save metadata
+                mp3.save()
 
         # delete corrupted mp3's
         except HeaderNotFoundError as err:
@@ -146,11 +147,16 @@ class Downloader:
 
     # download and rename artwork
     def get_artwork(self, track):
-        artwork = wget.download(track.artwork_url, out=self.artwork_dir, bar=False)
-        artwork_file = os.path.join(self.artwork_dir, artwork)
-        new_artwork_filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        new_artwork_file = os.path.join(self.artwork_dir, new_artwork_filename + ".jpg")
-        os.rename(artwork_file, new_artwork_file)
+        try:
+            artwork = wget.download(track.artwork_url, out=self.artwork_dir, bar=False)
+            artwork_file = os.path.join(self.artwork_dir, artwork)
+            new_artwork_filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            new_artwork_file = os.path.join(self.artwork_dir, new_artwork_filename + ".jpg")
+            os.rename(artwork_file, new_artwork_file)
+        except TypeError:
+            print("[ERR] Artwork not found")
+            self.debug.append("[ERR] Artwork not found")
+            return None
 
         return new_artwork_file
 
