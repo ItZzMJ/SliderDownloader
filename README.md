@@ -11,3 +11,5 @@ kann es sein, dass das Original runtergeladen und umbenannt wird, wenn es höher
 
 Außerdem gibt es ab und zu Probleme mit der Artist-Erkennung von Soundcloud, da der User der den Track hochgeladen hat 
 nicht auch immer der eigentliche Artist ist.
+
+Sourcecode: https://github.com/ItZzMJ/SliderDownloader
