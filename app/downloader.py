@@ -5,11 +5,11 @@ from mutagen.mp3 import HeaderNotFoundError
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import urllib.parse
-from time import sleep
 from page import SearchPage
-import wget
 import os
 import music_tag
+import urllib.request
+import ssl
 
 
 class Downloader:
@@ -86,7 +86,8 @@ class Downloader:
         driver = self.driver
 
         # build query url and encode it
-        url = self.url + "#" + urllib.parse.quote(", ".join(track.artists) + " " + track.name)
+        url = self.url + "#" + urllib.parse.quote(track.print_artists() + " " + track.name)
+
         driver.get(url)
         driver.refresh()  # refresh in case site gets stuck on a not found song
 
@@ -103,7 +104,13 @@ class Downloader:
         # download_file
         print("[LOG] Downloading " + track.print_filename())
         self.debug.append("[LOG] Downloading " + track.print_filename())
-        filename = wget.download(dl_link, out=self.output_dir, bar=False)
+        filename = os.path.join(self.output_dir, track.print_filename())
+        # filename = wget.download(dl_link, out=self.output_dir, bar=False)
+        r = urllib.request.urlopen(dl_link, context=ssl.create_default_context())
+        # print(r.getcode())
+        with open(filename, "wb") as f:
+            f.write(r.read())
+
 
         # download artwork
         print("[LOG] Downloading artwork")
@@ -126,7 +133,7 @@ class Downloader:
         try:
             mp3 = music_tag.load_file(file)
             mp3['title'] = track.name
-            mp3['artist'] = ", ".join(track.artists)
+            mp3['artist'] = track.print_artists()
             mp3['genre'] = track.genre
             mp3['year'] = track.year
 
@@ -145,20 +152,22 @@ class Downloader:
 
         self.rename_file(track, filename)
 
-    # download and rename artwork
+    # download artwork
     def get_artwork(self, track):
         try:
-            artwork = wget.download(track.artwork_url, out=self.artwork_dir, bar=False)
-            artwork_file = os.path.join(self.artwork_dir, artwork)
-            new_artwork_filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            new_artwork_file = os.path.join(self.artwork_dir, new_artwork_filename + ".jpg")
-            os.rename(artwork_file, new_artwork_file)
+            artwork_filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            artwork_file = os.path.join(self.artwork_dir, artwork_filename + ".jpg")
+            r = urllib.request.urlopen(track.artwork_url, context=ssl.create_default_context())
+            # print(r.getcode())
+            with open(artwork_file, "wb") as f:
+                f.write(r.read())
+
         except TypeError:
             print("[ERR] Artwork not found")
             self.debug.append("[ERR] Artwork not found")
             return None
 
-        return new_artwork_file
+        return artwork_file
 
     # rename file
     def rename_file(self, track, filename):

@@ -10,7 +10,10 @@ class Track:
         return self.artists
 
     def print_artists(self):
-        artists = ", ".join(self.artists)
+        if type(self.artists) is list:
+            artists = ", ".join(self.artists)
+        else:
+            artists = self.artists
         return artists
 
     def print_filename(self):

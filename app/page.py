@@ -1,12 +1,7 @@
-from pprint import pprint
-
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
-from math import ceil
 from time import sleep
-from element import BasePageElement
 from locator import SearchPageLocators
-import selenium.common.exceptions as SeleniumExceptions
 from selenium.webdriver.support import expected_conditions as EC
 import re
 

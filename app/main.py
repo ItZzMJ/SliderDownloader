@@ -1,14 +1,10 @@
 import json
-import sys
 import traceback
 from json import JSONDecodeError
-
 from spotifyAPI import SpotifyAPI
-from soundcloudAPI import Soundcloud
+from soundcloudAPI import SoundcloudAPI
 from downloader import Downloader
-import pathlib
 import os
-from time import sleep
 import threading
 import PySimpleGUI as sg
 
@@ -131,6 +127,10 @@ class Main:
             else:
                 tracks = self.filter_existing_tracks(playlist_dir, tracks)
 
+            # for track in tracks:
+            #     print(track.print_artists())
+            # exit(0)
+
             if tracks:
                 # download Tracks
                 self.download(tracks, playlist_dir, progress_bar)
@@ -143,7 +143,7 @@ class Main:
     # get name of playlist
     def get_playlist_name(self, tracks, url):
         if "soundcloud" in url:
-            soundcloud = Soundcloud()
+            soundcloud = SoundcloudAPI()
 
             # get Name
             return soundcloud.get_playlist_name(url)
@@ -254,7 +254,7 @@ class Main:
     def get_tracks(self, url):
         # determine if soundcloud or spotify
         if "soundcloud" in url:
-            soundcloud = Soundcloud()
+            soundcloud = SoundcloudAPI()
 
             # get Tracks
             return soundcloud.get_playlist_tracks(url)

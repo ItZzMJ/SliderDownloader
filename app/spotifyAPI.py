@@ -1,9 +1,6 @@
-from pprint import pprint
 from track import Track
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-from dotenv import load_dotenv
-import os
 
 
 class SpotifyAPI:
