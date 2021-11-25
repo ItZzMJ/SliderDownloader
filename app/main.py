@@ -22,7 +22,7 @@ class Main:
         url = settings['url']
 
         layout = self.get_layout(output_dir, url)
-        window = sg.Window('Slider Downloader v1.0', layout)
+        window = sg.Window('Slider Downloader v1.1', layout)
 
         # Main Loop
         try:

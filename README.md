@@ -1,6 +1,9 @@
 # SliderDownloader
 
 ## Installation
+Python wird benötigt: https://www.python.org/downloads/ <br>
+Genauso wie Google Chrome: https://www.google.com/intl/de_de/chrome/ <br>
+Das war's schon! Einfach die exe starten und Los geht's!
 
 ## Achtung
 Es könnte sein, dass das Tool nicht immer den richtigen Song findet, z.B. bei einem Remix eines populären Tracks 

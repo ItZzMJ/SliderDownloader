@@ -1,7 +1,0 @@
-music_tag==0.4.3
-mutagen==1.45.1
-PySimpleGUI==4.55.1
-selenium==4.1.0
-soundcloud_v2==1.1.4
-spotipy==2.19.0
-webdriver_manager==3.5.2
