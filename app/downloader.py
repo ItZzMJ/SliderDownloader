@@ -106,11 +106,15 @@ class Downloader:
         self.debug.append("[LOG] Downloading " + track.print_filename())
         filename = os.path.join(self.output_dir, track.print_filename())
         # filename = wget.download(dl_link, out=self.output_dir, bar=False)
-        r = urllib.request.urlopen(dl_link, context=ssl.create_default_context())
+
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        r = urllib.request.urlopen(dl_link, context=ctx)
         # print(r.getcode())
         with open(filename, "wb") as f:
             f.write(r.read())
-
 
         # download artwork
         print("[LOG] Downloading artwork")
