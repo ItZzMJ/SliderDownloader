@@ -23,7 +23,7 @@ class SoundcloudAPI:
                 track = self.sc.get_track(track.id)
 
             title = track.title.replace("[", "").replace("]", "")
-            artist = track.user.username.replace("[", "").replace("]", "").strip()
+            user = track.user.username.replace("[", "").replace("]", "").strip()
             genre = track.genre
             artwork_url = track.artwork_url
             year = track.created_at.year
@@ -48,9 +48,16 @@ class SoundcloudAPI:
             # regex = re.compile(re.escape("now in"), re.IGNORECASE)
             # title = regex.sub("", title)
 
-            if artist in title:
-                title = title.replace(artist, "")
+            #if artist in title:
+            #    title = title.replace(artist, "")
                 #print(title)
+
+            if " - " in title:
+                splitted = title.split(" - ")
+                artist = splitted[0]
+                title = " - ".join(splitted[1:])
+            else:
+                artist = user
 
             title = title.replace("()", "").strip(" -|!,")
 
@@ -69,7 +76,7 @@ class SoundcloudAPI:
 
 #
 # x = SoundcloudAPI()
-# url = "https://soundcloud.com/mj-moebius/sets/tech-house"
+# url = "https://soundcloud.com/heatedbread/sets/bass-house-1"
 # tracks = x.get_playlist_tracks(url)
 #
 # for track in tracks:

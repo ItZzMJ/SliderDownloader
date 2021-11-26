@@ -97,8 +97,8 @@ class Downloader:
         search_page.hide_popup()
 
         # get download link
-        print("[LOG] Getting Download link")
-        self.debug.append("[LOG] Getting Download link")
+        print(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
+        self.debug.append(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
         dl_link = search_page.get_dl_link()
 
         # download_file
@@ -117,8 +117,8 @@ class Downloader:
             f.write(r.read())
 
         # download artwork
-        print("[LOG] Downloading artwork")
-        self.debug.append("[LOG] Downloading artwork")
+        print(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
+        self.debug.append(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
         artwork = self.get_artwork(track)
 
         # set metadata and rename file
