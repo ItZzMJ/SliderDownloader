@@ -163,11 +163,8 @@ class Main:
 
         settings = {'result_dir': result_dir, 'url': url}
 
-        try:
-            f = open(file, "w+")
+        with open(file, "w") as f:
             json.dump(settings, f)
-        finally:
-            f.close()
 
     # load previous output_dir and url
     def load_settings(self):
@@ -175,17 +172,15 @@ class Main:
         if not os.path.isfile(file):
             return {'result_dir': '', 'url': ''}
 
-        f = open(file, "r+")
         try:
-            settings = json.load(f)
+            with open(file, "r") as f:
+                settings = json.load(f)
         except JSONDecodeError as e:
             print("[ERR] Error while reading settings! Check file!")
             self.debug.append("[ERR] Error while reading settings! Check file!")
             self.debug.append("[ERR] Error: {0}".format(e))
 
             settings = {'result_dir': '', 'url': ''}
-        finally:
-            f.close()
 
         return settings
 
