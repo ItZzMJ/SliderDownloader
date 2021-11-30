@@ -88,7 +88,7 @@ class Downloader:
 
     # download one track
     def download_track(self, track):
-        logging.info(f"[DOWNLOADER] Starting Download for {track.print_filename}")
+        logging.info(f"[DOWNLOADER] Starting Download for {track.print_filename()}")
         driver = self.driver
 
         # build query url and encode it
@@ -127,13 +127,13 @@ class Downloader:
 
         # download artwork
         print(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
-        #self.debug.append(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
+        # self.debug.append(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
         logging.info(f"[DOWNLOADER] Downloading artwork for {track.print_artists()} - {track.name}")
         artwork = self.get_artwork(track)
 
         # set metadata and rename file
         print("[LOG] Setting metadata")
-        #self.debug.append("[LOG] Setting metadata")
+        # self.debug.append("[LOG] Setting metadata")
         logging.info("[DOWNLOADER] Setting metadata")
         self.set_metadata(track, filename, artwork)
 
