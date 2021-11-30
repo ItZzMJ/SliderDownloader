@@ -10,7 +10,7 @@ import PySimpleGUI as sg
 import logging
 
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-logging.basicConfig(filename="LOG.log", level=logging.DEBUG, format=LOG_FORMAT)
+logging.basicConfig(filename="LOG.log", level=logging.INFO, format=LOG_FORMAT)
 logger = logging.getLogger()
 
 

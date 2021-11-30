@@ -104,14 +104,14 @@ class Downloader:
 
         # get download link
         print(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
-        #self.debug.append(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
+        # self.debug.append(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
         logging.info(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
 
         dl_link = search_page.get_dl_link()
 
         # download_file
         print("[LOG] Downloading " + track.print_filename())
-        #self.debug.append("[LOG] Downloading " + track.print_filename())
+        # self.debug.append("[LOG] Downloading " + track.print_filename())
         logging.info("[DOWNLOADER] Downloading " + track.print_filename())
         filename = os.path.join(self.output_dir, track.print_filename())
         # filename = wget.download(dl_link, out=self.output_dir, bar=False)
@@ -138,7 +138,7 @@ class Downloader:
         self.set_metadata(track, filename, artwork)
 
         print(f"[LOG] {track.print_filename()} finished!")
-        #self.debug.append(f"[LOG] {track.print_filename()} finished!")
+        # self.debug.append(f"[LOG] {track.print_filename()} finished!")
         logging.info(f"[DOWNLOADER] {track.print_filename()} finished!")
         return track.print_filename()
 
