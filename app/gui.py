@@ -1,8 +1,10 @@
 import PySimpleGUI as sg
+import logging
 
 
 class GUI:
     def __init__(self, result_dir=None, url=None):
+        logging.info(f"[GUI] GUI init")
         sg.theme("Dark")
 
         dir_input = [
@@ -40,24 +42,17 @@ class GUI:
         ]
 
     def get_layout(self):
+        logging.info(f"[GUI] Returning Layout")
         return self.layout
 
-    def get_background_layout(self):
-        # background_image = "defqon.jpg"
 
-        background_layout = [[sg.Image(r"Defqon.png")]]
-        return background_layout
-
-
-
-
-top_window = sg.Window('Slider Downloader', layout)
-
-while True:
-    event, values = top_window.read()
-    if event == "Exit" or event == sg.WINDOW_CLOSED:
-        break
-
-top_window.close()
+# top_window = sg.Window('Slider Downloader', layout)
+#
+# while True:
+#     event, values = top_window.read()
+#     if event == "Exit" or event == sg.WINDOW_CLOSED:
+#         break
+#
+# top_window.close()
 # window_background.close()
 

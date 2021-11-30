@@ -10,10 +10,12 @@ import os
 import music_tag
 import urllib.request
 import ssl
+import logging
 
 
 class Downloader:
     def __init__(self, output_dir, show_chrome=False):
+        logging.info("[DOWNLOADER] Downloader init")
         # ua = UserAgent(verify_ssl=False).random
         # resolutions = ["1920,1080", "1280,1024", "1600,1200", "1680,1050", "1900,1200", "1366,768", "1440,900",
         #                "1280,800", "1536,864", "1280,720", "1024,768"]
@@ -25,7 +27,7 @@ class Downloader:
         if not os.path.isdir(self.artwork_dir):
             os.mkdir(self.artwork_dir)
 
-        self.debug = []
+        #self.debug = []
 
         # set chrome options
         options = webdriver.ChromeOptions()
@@ -58,10 +60,12 @@ class Downloader:
 
         self.url = "https://slider.kz/"
         print("[LOG] Setup complete")
-        self.debug.append("[LOG] Setup complete")
+        logging.info("[DOWNLOADER] Setup complete")
+        #self.debug.append("[LOG] Setup complete")
 
     # download tracks
     def download(self, tracks, progress_bar=None):
+        logging.info(f"[DOWNLOADER] Starting to download {len(tracks)} Tracks")
         i = 0
         for track in tracks:
             i += 1
@@ -70,19 +74,21 @@ class Downloader:
                 if progress_bar:
                     progress_bar.update_bar((i/len(tracks)*1000))
             except NameError as err:
+                logging.error(f"[DOWNLOADER] Name Error: {err}")
                 print("[ERR] NAME ERROR:", end=' ')
                 print(err)
-                self.debug.append(f"[ERR] NAME ERROR: {err}")
+                #self.debug.append(f"[ERR] NAME ERROR: {err}")
 
                 self.driver.get(self.url)
                 # sleep(5)
                 continue
 
         shutil.rmtree(self.artwork_dir)
-        return self.debug
+        #return self.debug
 
     # download one track
     def download_track(self, track):
+        logging.info(f"[DOWNLOADER] Starting Download for {track.print_filename}")
         driver = self.driver
 
         # build query url and encode it
@@ -98,12 +104,15 @@ class Downloader:
 
         # get download link
         print(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
-        self.debug.append(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
+        #self.debug.append(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
+        logging.info(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
+
         dl_link = search_page.get_dl_link()
 
         # download_file
         print("[LOG] Downloading " + track.print_filename())
-        self.debug.append("[LOG] Downloading " + track.print_filename())
+        #self.debug.append("[LOG] Downloading " + track.print_filename())
+        logging.info("[DOWNLOADER] Downloading " + track.print_filename())
         filename = os.path.join(self.output_dir, track.print_filename())
         # filename = wget.download(dl_link, out=self.output_dir, bar=False)
 
@@ -118,16 +127,19 @@ class Downloader:
 
         # download artwork
         print(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
-        self.debug.append(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
+        #self.debug.append(f"[LOG] Downloading artwork for {track.print_artists()} - {track.name}")
+        logging.info(f"[DOWNLOADER] Downloading artwork for {track.print_artists()} - {track.name}")
         artwork = self.get_artwork(track)
 
         # set metadata and rename file
         print("[LOG] Setting metadata")
-        self.debug.append("[LOG] Setting metadata")
+        #self.debug.append("[LOG] Setting metadata")
+        logging.info("[DOWNLOADER] Setting metadata")
         self.set_metadata(track, filename, artwork)
 
         print(f"[LOG] {track.print_filename()} finished!")
-        self.debug.append(f"[LOG] {track.print_filename()} finished!")
+        #self.debug.append(f"[LOG] {track.print_filename()} finished!")
+        logging.info(f"[DOWNLOADER] {track.print_filename()} finished!")
         return track.print_filename()
 
     # set metadata of mp3 like title, artist, etc.
@@ -151,7 +163,8 @@ class Downloader:
         # delete corrupted mp3's
         except HeaderNotFoundError as err:
             print("[ERR] Corrupted MP3!! deleting...:" + track.print_filename())
-            self.debug.append("[ERR] Corrupted MP3!! deleting...:" + track.print_filename())
+            #self.debug.append("[ERR] Corrupted MP3!! deleting...:" + track.print_filename())
+            logging.error("[DOWNLOADER] Corrupted MP3!! deleting...:" + track.print_filename())
             #os.remove(file)
 
         self.rename_file(track, filename)
@@ -166,15 +179,17 @@ class Downloader:
             with open(artwork_file, "wb") as f:
                 f.write(r.read())
 
-        except TypeError:
+        except Exception:
             print("[ERR] Artwork not found")
-            self.debug.append("[ERR] Artwork not found")
+            #self.debug.append("[ERR] Artwork not found")
+            logging.warning("[DOWNLOADER] Artwork not found")
             return None
 
         return artwork_file
 
     # rename file
     def rename_file(self, track, filename):
+        logging.info("[DOWNLOADER] Renaming File")
         file = os.path.join(self.output_dir, filename)
         new_filename = track.print_filename()
         new_file = os.path.join(self.output_dir, new_filename)

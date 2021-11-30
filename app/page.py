@@ -4,6 +4,7 @@ from time import sleep
 from locator import SearchPageLocators
 from selenium.webdriver.support import expected_conditions as EC
 import re
+import logging
 
 
 class BasePage(object):
@@ -11,9 +12,11 @@ class BasePage(object):
     pages"""
 
     def __init__(self, driver):
+        logging.info(f"[BasePage] Page init")
         self.driver = driver
 
     def hide_popup(self):
+        logging.info(f"[BasePage] Hiding Popup")
         driver = self.driver
         driver.execute_script("hideDisc()")
 
@@ -43,6 +46,7 @@ class SearchPage(BasePage):
 
     # check bitrates of search results
     def check_bitrates(self):
+        logging.info(f"[SearchPage] Checking Bitrates")
         driver = self.driver
 
         elems = WebDriverWait(driver, 5).until(
@@ -66,7 +70,7 @@ class SearchPage(BasePage):
 
             # wait till informer element is completly loaded
             try:
-                WebDriverWait(driver, 4).until( # until '<img src="/media/images/preload.gif">' is away
+                WebDriverWait(driver, 4).until(  # until '<img src="/media/images/preload.gif">' is away
                     EC.text_to_be_present_in_element(SearchPageLocators.INFORMER, "Bitrate"))
                     #EC.invisibility_of_element_located(SearchPageLocators.PRELOADER))
             except TimeoutException:

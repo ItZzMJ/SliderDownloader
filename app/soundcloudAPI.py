@@ -1,10 +1,12 @@
 from track import Track
 from soundcloud import SoundCloud, BasicAlbumPlaylist, BasicTrack, MiniTrack
 import re
+import logging
 
 
 class SoundcloudAPI:
     def __init__(self):
+        logging.info("[SOUNDCLOUDAPI] Soundcloud init")
         self.client_id = "BcelrHPTZdE9G60fL6hI8bl4rBIFHPED"
         self.sc = SoundCloud(self.client_id)
 
@@ -12,6 +14,7 @@ class SoundcloudAPI:
 
     # get tracks from playlist
     def get_playlist_tracks(self, url):
+        logging.info("[SOUNDCLOUDAPI] Getting Playlist Tracks")
 
         playlist = self.sc.resolve(url)
 
@@ -61,11 +64,14 @@ class SoundcloudAPI:
 
             title = title.replace("()", "").strip(" -|!,")
 
+            logging.info(f"[SOUNDCLOUDAPI] Found Track [name={title}, artists={artist}, genre={genre}, artwork_url={artwork_url}, year={year}]")
+
             songs.append(Track(name=title, artists=artist, genre=genre, artwork_url=artwork_url, year=year))
 
         return songs
 
     def get_playlist_name(self, url):
+        logging.info(f"[SOUNDCLOUDAPI] Returning Playlistname")
         # get playlist
         playlist = self.sc.resolve(url)
 
