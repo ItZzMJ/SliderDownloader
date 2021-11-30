@@ -32,7 +32,7 @@ class Downloader:
         # set chrome options
         options = webdriver.ChromeOptions()
         options.add_experimental_option("useAutomationExtension", False)
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("excludeSwitches", ["enable-automation", "enable-logging"])
         options.add_argument("--incognito")
         # options.add_argument("--user-agent=" + ua)
         # options.add_argument("--window-size=" + res)

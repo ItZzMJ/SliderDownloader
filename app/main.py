@@ -8,6 +8,8 @@ import os
 import threading
 import PySimpleGUI as sg
 import logging
+from sys import exit
+
 
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 logging.basicConfig(filename="LOG.log", level=logging.INFO, format=LOG_FORMAT)
