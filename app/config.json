@@ -1,0 +1,9 @@
+{
+  "soundcloud": {
+      "client_id": "lfCwve78235Iw2UNbGezTfUWMB5zHKmb"
+  },
+  "spotify": {
+      "client_id": "cdf4ed28ce6242c79dae19287a545c4b",
+      "client_secret": "794b355f9e6d4f7285ed476ee6108125"
+  }
+}

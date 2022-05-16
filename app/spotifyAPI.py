@@ -1,3 +1,5 @@
+import json
+
 from track import Track
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -7,17 +9,25 @@ import logging
 class SpotifyAPI:
     def __init__(self):
         logging.info("[SPOTIFYAPI] SpotifyAPI init")
-        self.client_id = "cdf4ed28ce6242c79dae19287a545c4b"
-        self.client_secret = "794b355f9e6d4f7285ed476ee6108125"
         self.credentials = self.get_credentials()
         self.spotify = spotipy.Spotify(client_credentials_manager=self.credentials)
 
     # login
     def get_credentials(self):
         logging.info(f"[SPOTIFYAPI] Returning Credentials")
-        return SpotifyClientCredentials(
-            client_id=self.client_id,
-            client_secret=self.client_secret)
+        with open("config.json", "r+") as f:
+            config = json.load(f)
+
+        try:
+            spotify = config["spotify"]
+
+            return SpotifyClientCredentials(
+                client_id=spotify["client_id"],
+                client_secret=spotify["client_id"])
+        except IndexError:
+            print("Can't find the Spotify client_id or secret. Check config.json file!")
+            logging.error("[SPOTIFYAPI] Can't find the Spotify client_id or secret. Check config.json file!")
+            return None
 
     # get name of playlist
     def get_playlist_name(self, url):
@@ -68,7 +78,9 @@ class SpotifyAPI:
 
         # get usefull info
         for song in songs:
-            name = song['track']['name']
+            name = song['track']['name'].replace("/", "").replace("<", "").replace(">", "").replace(":", "")\
+                .replace("\\", "").replace("|", "")\
+                .replace("?", "").replace("*", "")
 
             # get artwork
             img_url = self.get_img_url(song)
@@ -82,23 +94,18 @@ class SpotifyAPI:
             except:
                 year = None
 
-
             artists = []
             for artist in song['track']['artists']:
-                artists.append(artist['name'])
+                artists.append(artist['name'].replace("/", "").replace("<", "").replace(">", "").replace(":", "")
+                               .replace("\\", "").replace("|", "").replace("?", "").replace("*", ""))
 
             logging.info(f"[SPOTIFYAPI] Found Track [name={name}, artists={artists}, genre={genre}, artwork_url={img_url}, year={year}]")
             tracks.append(Track(name=name, artists=artists, genre=genre, artwork_url=img_url, year=year))
 
         return tracks
 
-# TODO: remove
-# playlist = "https://open.spotify.com/playlist/1B0gmbwIiJBkpFslXZBsZw?si=7c2fc17f99294cc8"
-# api = SpotifyAPI()
-# y = api.get_playlist_tracks(url=playlist)
-#
-# for track in y:
-#     print(f"{track.name} - {track.print_artists()} | {track.genre} | {track.artwork_url}")
-#tracks = y["tracks"]
-#pprint(y)
+
+# if __name__ == '__main__':
+#     x = SpotifyAPI()
+#     print(x.get_credentials())
 

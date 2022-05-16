@@ -1,3 +1,5 @@
+import json
+
 from track import Track
 from soundcloud import SoundCloud, BasicAlbumPlaylist, BasicTrack, MiniTrack
 import re
@@ -7,7 +9,7 @@ import logging
 class SoundcloudAPI:
     def __init__(self):
         logging.info("[SOUNDCLOUDAPI] Soundcloud init")
-        self.client_id = "BcelrHPTZdE9G60fL6hI8bl4rBIFHPED"
+        self.client_id = self.get_client_id()
         self.sc = SoundCloud(self.client_id)
 
         #self.api = SoundcloudAPI()
@@ -25,11 +27,24 @@ class SoundcloudAPI:
             if isinstance(track, MiniTrack):
                 track = self.sc.get_track(track.id)
 
-            title = track.title.replace("[", "").replace("]", "")
-            user = track.user.username.replace("[", "").replace("]", "").strip()
+            title = track.title.replace("[", "").replace("]", "")\
+                .replace("/", "").replace("<", "").replace(">", "").replace(":", "").replace("\\", "").replace("|", "")\
+                .replace("?", "").replace("*", "")
+            user = track.user.username.replace("[", "").replace("]", "").strip()\
+                .replace("/", "").replace("<", "").replace(">", "").replace(":", "").replace("\\", "").replace("|", "")\
+                .replace("?", "").replace("*", "")
             genre = track.genre
             artwork_url = track.artwork_url
             year = track.created_at.year
+
+            # remove emojis
+            emoji_pattern = re.compile("["
+                                       u"\U0001F600-\U0001F64F"  # emoticons
+                                       u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                                       u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                                       u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                                       "]+", flags=re.UNICODE)
+            title = emoji_pattern.sub(r'', title)  # no emoji
 
             # remove 'Free Download' from title
             regex = re.compile(re.escape("free download"), re.IGNORECASE)
@@ -77,14 +92,19 @@ class SoundcloudAPI:
 
         return playlist.title
 
+    def get_client_id(self):
+        with open("config.json", "r+") as f:
+            config = json.load(f)
+
+        if config["soundcloud"]["client_id"]:
+            return config["soundcloud"]["client_id"]
+        else:
+            print("Can't find the Soundcloud client_id. Check config.json file!")
+            logging.error("[SOUNDCLOUDAPI] Can't find the Soundcloud client_id. Check config.json file!")
+            return None
 
 
-
-#
-# x = SoundcloudAPI()
-# url = "https://soundcloud.com/heatedbread/sets/bass-house-1"
-# tracks = x.get_playlist_tracks(url)
-#
-# for track in tracks:
-#     print(f"{track.name} - {track.print_artists()} | {track.genre} | {track.artwork_url}")
-
+# if __name__ == "__main__":
+#     x = SoundcloudAPI()
+#     client_id = x.get_client_id()
+#     print(client_id)

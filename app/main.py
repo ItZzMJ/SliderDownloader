@@ -137,35 +137,36 @@ class Main:
             exit(-1)
 
         else:
-            logging.info("[MAIN] Getting Playlist Name")
-            # get playlist name
-            playlist_name = self.get_playlist_name(tracks, url)
-            playlist_dir = os.path.join(output_dir, playlist_name)
+            if tracks is not None:
+                logging.info("[MAIN] Getting Playlist Name")
+                # get playlist name
+                playlist_name = self.get_playlist_name(tracks, url)
+                playlist_dir = os.path.join(output_dir, playlist_name)
 
-            # make directory for playlist download if doesnt exist already
-            if not os.path.isdir(playlist_dir):
-                print(f"[LOG] Creating {playlist_dir}")
-                #self.debug.append(f"[LOG] Creating {playlist_dir}")
-                logging.info(f"[MAIN] Creating Playlist Dir {playlist_dir}")
-                os.mkdir(playlist_dir)
+                # make directory for playlist download if doesnt exist already
+                if not os.path.isdir(playlist_dir):
+                    print(f"[LOG] Creating {playlist_dir}")
+                    #self.debug.append(f"[LOG] Creating {playlist_dir}")
+                    logging.info(f"[MAIN] Creating Playlist Dir {playlist_dir}")
+                    os.mkdir(playlist_dir)
 
-            # check for existing tracks if directory exists
-            else:
-                tracks = self.filter_existing_tracks(playlist_dir, tracks)
+                # check for existing tracks if directory exists
+                else:
+                    tracks = self.filter_existing_tracks(playlist_dir, tracks)
 
-            # for track in tracks:
-            #     print(track.print_artists())
-            # exit(0)
+                # for track in tracks:
+                #     print(track.print_artists())
+                # exit(0)
 
-            if tracks:
-                # download Tracks
-                self.download(tracks, playlist_dir, progress_bar)
+                if tracks:
+                    # download Tracks
+                    self.download(tracks, playlist_dir, progress_bar)
 
-            # if tracks is empty
-            else:
-                print("[ERR] No new Tracks found!")
-                logging.warning(f"[MAIN] No new Tracks found!")
-                #self.debug.append("[ERR] No new Tracks found!")
+                # if tracks is empty
+                else:
+                    print("[ERR] No new Tracks found!")
+                    logging.warning(f"[MAIN] No new Tracks found!")
+                    #self.debug.append("[ERR] No new Tracks found!")
 
     # get name of playlist
     def get_playlist_name(self, tracks, url):
