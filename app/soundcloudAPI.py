@@ -93,7 +93,7 @@ class SoundcloudAPI:
         return playlist.title
 
     def get_client_id(self):
-        with open("config.json", "r+") as f:
+        with open("config.json", "r") as f:
             config = json.load(f)
 
         if config["soundcloud"]["client_id"]:
