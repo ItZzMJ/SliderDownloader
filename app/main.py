@@ -36,12 +36,11 @@ class Main:
                 "client_id": "lfCwve78235Iw2UNbGezTfUWMB5zHKmb"
             }
             configdata["spotify"] = {
-                "client_id": "cdf4ed28ce6242c79dae19287a545c4b",
-                "client_secret": "794b355f9e6d4f7285ed476ee6108125"
+                "client_id": "9556378171da437f969055d0db88f817",
+                "client_secret": "9939e0ca51314408ac50ae58db7e4d21"
             }
-
-        with open('config.json', "w") as f:
-            json.dump(configdata, f, indent=2)
+            with open('config.json', "w") as f:
+                json.dump(configdata, f, indent=2)
 
         layout = self.get_layout(output_dir, url)
         window = sg.Window('Slider Downloader v1.3', layout)

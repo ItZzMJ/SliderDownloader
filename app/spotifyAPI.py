@@ -10,7 +10,9 @@ class SpotifyAPI:
     def __init__(self):
         logging.info("[SPOTIFYAPI] SpotifyAPI init")
         self.credentials = self.get_credentials()
-        self.spotify = spotipy.Spotify(client_credentials_manager=self.credentials)
+        auth_manager = SpotifyClientCredentials(client_id=self.credentials["client_id"],
+                                                client_secret=self.credentials["client_secret"])
+        self.spotify = spotipy.Spotify(auth_manager=auth_manager)
 
     # login
     def get_credentials(self):
@@ -18,16 +20,18 @@ class SpotifyAPI:
         with open("config.json", "r+") as f:
             config = json.load(f)
 
-        try:
-            spotify = config["spotify"]
-
-            return SpotifyClientCredentials(
-                client_id=spotify["client_id"],
-                client_secret=spotify["client_id"])
-        except IndexError:
-            print("Can't find the Spotify client_id or secret. Check config.json file!")
-            logging.error("[SPOTIFYAPI] Can't find the Spotify client_id or secret. Check config.json file!")
-            return None
+        return config["spotify"]
+        #
+        # try:
+        #     spotify = config["spotify"]
+        #
+        #     return SpotifyClientCredentials(
+        #         client_id=spotify["client_id"],
+        #         client_secret=spotify["client_id"])
+        # except IndexError:
+        #     print("Can't find the Spotify client_id or secret. Check config.json file!")
+        #     logging.error("[SPOTIFYAPI] Can't find the Spotify client_id or secret. Check config.json file!")
+        #     return None
 
     # get name of playlist
     def get_playlist_name(self, url):
@@ -107,5 +111,6 @@ class SpotifyAPI:
 
 # if __name__ == '__main__':
 #     x = SpotifyAPI()
-#     print(x.get_credentials())
+#     url = "https://open.spotify.com/playlist/01v0sBpz6eN7jUK5RbmBxz?si=6611f9b267b2480b"
+#     print(x.get_playlist_tracks(url))
 
