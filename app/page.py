@@ -33,7 +33,10 @@ class SearchPage(BasePage):
     def get_dl_link(self):
         driver = self.driver
         # check bitrates of songs found
-        position = self.check_bitrates()
+        position, bitrate = self.check_bitrates()
+
+        #print("BITRATE:")
+        #print(bitrate)
 
         # print(f"Position: {position}")
 
@@ -42,7 +45,7 @@ class SearchPage(BasePage):
         dl_link = dl_elems[position].find_element(*SearchPageLocators.A_TAG)
 
         # return download link
-        return dl_link.get_attribute("href")
+        return dl_link.get_attribute("href"), bitrate
 
     # check bitrates of search results
     def check_bitrates(self):
@@ -68,6 +71,8 @@ class SearchPage(BasePage):
             # print(f"Executing Script: {script}")
             driver.execute_script(script)  # TODO: maybe just check downloadlink for extra != null ?
 
+            #logging.info("Executed Script")
+
             # wait till informer element is completly loaded
             try:
                 WebDriverWait(driver, 4).until(  # until '<img src="/media/images/preload.gif">' is away
@@ -86,6 +91,9 @@ class SearchPage(BasePage):
             # extract bitrate
             bitrate = int(re.search(r'\d+', bitrate_elem.text.split(":")[1]).group(0))
 
+            #logging.info("ExtractingBitrate")
+
+
             if bitrate < 319: # some tracks are shown with 319 kbit/s ?
                 if bitrate > highest_bitrate:
                     highest_bitrate_position = i
@@ -94,10 +102,12 @@ class SearchPage(BasePage):
                 i += 1
                 continue
             else:
-                return i
+                return i, 320
+
+        #logging.info(f"Bitrate: {highest_bitrate}")
 
         print(f"Can't find a Track with 320 kbit/s, highest bitrate was {highest_bitrate}")
 
-        return highest_bitrate_position
+        return highest_bitrate_position, highest_bitrate
 
 

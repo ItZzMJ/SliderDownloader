@@ -318,7 +318,7 @@ class Main:
         downloader = Downloader(playlist_dir, self.show_chrome)
         try:
             logging.info(f"[MAIN] Trying Download")
-            downloader.download(tracks, progress_bar)
+            not_found, low_bitrate = downloader.download(tracks, progress_bar)
         finally:
             downloader.tear_down()
 
@@ -332,6 +332,25 @@ class Main:
 
         print("<------------ Download Finished! Fasching Mafensen ------------>")
         logging.info("[MAIN] <------------ Download Finished! Fasching Mafensen ------------>")
+
+        if not_found:
+            print("\n<------------------------Songs not found------------------------>")
+            logging.info("Songs not found:")
+            for song in not_found:
+                print(song)
+                logging.info(song)
+            print("-----------------------------------------------------------------------")
+
+
+        if low_bitrate:
+            print("\n<----------------------Low Bitrate---------------------------------->")
+            logging.info("Songs with low bitrate:")
+            for song in low_bitrate:
+                print(song)
+                logging.info(song)
+            print("---------------------------------------------------------------------------")
+
+
         #self.debug.append("<------------ Download Finished! Fasching Mafensen ------------>")
 
 

@@ -59,6 +59,8 @@ class Downloader:
         self.driver.maximize_window()
 
         self.url = "https://slider.kz/"
+        self.not_found = []
+        self.low_bitrate = []
         print("[LOG] Setup complete")
         logging.info("[DOWNLOADER] Setup complete")
         #self.debug.append("[LOG] Setup complete")
@@ -79,12 +81,18 @@ class Downloader:
                 print(err)
                 #self.debug.append(f"[ERR] NAME ERROR: {err}")
 
+                # logging.error("append to array")
+
+                self.not_found.append(f"{track.print_artists()} - {track.name}")
+                # logging.error("successfully appended to array")
+
                 self.driver.get(self.url)
                 # sleep(5)
                 continue
 
         shutil.rmtree(self.artwork_dir)
-        #return self.debug
+
+        return self.not_found, self.low_bitrate
 
     # download one track
     def download_track(self, track):
@@ -107,7 +115,11 @@ class Downloader:
         # self.debug.append(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
         logging.info(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
 
-        dl_link = search_page.get_dl_link()
+        dl_link, bitrate = search_page.get_dl_link()
+
+        #print(f"BITRATE: {bitrate}")
+        if bitrate < 319:
+            self.low_bitrate.append(f"{track.print_artists()} - {track.name}")
 
         # download_file
         print("[LOG] Downloading " + track.print_filename())
