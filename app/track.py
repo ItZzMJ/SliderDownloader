@@ -1,8 +1,8 @@
 class Track:
     def __init__(self, name, artists, genre=None, artwork_url=None, year=None):
-        self.name = name
-        self.artists = artists
-        self.genre = genre
+        self.name = name.replace('"', "")
+        self.artists = artists.replace('"', "")
+        self.genre = genre.replace('"', "")
         self.artwork_url = artwork_url
         self.year = year
 
