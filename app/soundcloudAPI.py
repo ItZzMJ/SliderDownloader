@@ -106,5 +106,5 @@ class SoundcloudAPI:
 
 # if __name__ == "__main__":
 #     x = SoundcloudAPI()
-#     client_id = x.get_client_id()
-#     print(client_id)
+#     tracks = x.get_playlist_tracks("")
+#     print(tracks)
