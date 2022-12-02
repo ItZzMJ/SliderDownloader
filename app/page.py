@@ -1,7 +1,8 @@
+import random
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from time import sleep
-from locator import SearchPageLocators
+from locator import SearchPageLocators, FreeDownloadSearchPageLocators
 from selenium.webdriver.support import expected_conditions as EC
 import re
 import logging
@@ -111,3 +112,97 @@ class SearchPage(BasePage):
         return highest_bitrate_position, highest_bitrate
 
 
+class FreeDownloadSearchPage(BasePage):
+    """Free Download Search Page, search for a song"""
+
+    def search(self, query):
+        driver = self.driver
+
+        try:
+
+            # type query
+            input = WebDriverWait(driver, 5).until(
+                lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.INPUT))
+
+            input.clear()
+            sleep(random.randint(200, 1500)/1000)
+
+            input.send_keys(query)
+            sleep(random.randint(1000, 3000)/1000)
+
+            # click search button
+            search_button = WebDriverWait(driver, 5).until(
+                lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.SEARCH_BUTTON))
+
+            search_button.click()
+
+
+            # check results
+            try:
+                no_results = WebDriverWait(driver, 5).until(
+                    lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.NO_RESULT))
+            except TimeoutException:
+                return True
+            else:
+                return False
+
+        except Exception as e:
+            print("[ERR] ")
+            print(e)
+            return False
+
+    def use_vpn(self):
+        driver = self.driver
+
+        # check if checkbox is already checked
+        try:
+            checkbox = WebDriverWait(driver, 5).until(
+                lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.USE_VPN_CHECKBOX))
+            if not checkbox.is_selected():
+                checkbox.click()
+
+        except Exception as e:
+            print("[ERR] ")
+            print(e)
+
+    def get_dl_link(self):
+        driver = self.driver
+
+        try:
+            dl_link = WebDriverWait(driver, 5).until(
+                lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.FIRST_RESULT_DL_BUTTON))
+
+            dl_link.click()
+
+        except Exception as e:
+            print("[ERR] ")
+            print(e)
+
+    def check_captcha(self):
+        driver = self.driver
+
+        try:
+            captcha = WebDriverWait(driver, 3).until(
+                lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.CAPTCHA))
+        except TimeoutException:
+            return False
+        else:
+            return True
+
+    def download(self):
+        driver = self.driver
+
+        try:
+            dl_button = WebDriverWait(driver, 5).until(
+                lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.DL_BUTTON))
+
+            sleep(random.randint(1000, 3000)/1000)
+
+            dl_button.click()
+
+            return True
+
+        except Exception as e:
+            print("[ERR] ")
+            print(e)
+            return False

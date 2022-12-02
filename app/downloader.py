@@ -5,13 +5,13 @@ from mutagen.mp3 import HeaderNotFoundError
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import urllib.parse
-from page import SearchPage
+from page import SearchPage, FreeDownloadSearchPage
 import os
 import music_tag
 import urllib.request
 import ssl
 import logging
-
+from time import sleep
 
 class Downloader:
     def __init__(self, output_dir, show_chrome=False):
@@ -46,9 +46,9 @@ class Downloader:
         # options.add_experimental_option("prefs", prefs)
 
         # show browser doing its magic
-        if not show_chrome:
-            options.add_argument("--headless")
-            options.add_argument("--disable-gpu")
+        # if not show_chrome:
+        #     options.add_argument("--headless")
+        #     options.add_argument("--disable-gpu")
 
         # disable Webdriver Manager output
         os.environ['WDM_LOG_LEVEL'] = '0'
@@ -72,7 +72,7 @@ class Downloader:
         for track in tracks:
             i += 1
             try:
-                self.download_track(track)
+                self.download_track_new(track)
                 if progress_bar:
                     progress_bar.update_bar((i/len(tracks)*1000))
             except NameError as err:
@@ -153,6 +153,66 @@ class Downloader:
         # self.debug.append(f"[LOG] {track.print_filename()} finished!")
         logging.info(f"[DOWNLOADER] {track.print_filename()} finished!")
         return track.print_filename()
+
+    def download_track_new(self, track):
+        logging.info(f"[DOWNLOADER] Starting Download for {track.print_filename()}")
+        driver = self.driver
+
+        url = "https://free-mp3-download.net/"
+
+        driver.get(url)
+        sleep(2)
+
+        search_page = FreeDownloadSearchPage(self.driver)
+
+        search_page.use_vpn()
+
+        query = track.print_artists() + " - " + track.name
+
+        success = search_page.search(query)
+
+        # if search is not successful, sanitize query from (Original Mix) (Extended Mix) [HEK003] etc.
+        if not success:
+            to_replace = [
+                "(Original Mix)",
+                "(Extended Mix)",
+                "[", # label shit
+            ]
+            for replace in to_replace:
+                query = query.split(replace)[0]
+
+            success = search_page.search(query)
+
+        if not success:
+            self.not_found.append(f"{track.print_artists()} - {track.name}")
+            return
+
+        # get download link
+        print(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
+
+        dl_link = search_page.get_dl_link()
+
+        if not dl_link:
+            self.not_found.append(f"{track.print_artists()} - {track.name}")
+            return
+
+        # download_file
+        print("[LOG] Downloading " + dl_link)
+        driver.get(dl_link)
+
+        sleep(random.randint(1000, 3000) / 1000)
+
+        # check for captcha
+        if search_page.check_captcha():
+            # user input required
+            print("[LOG] Captcha detected, please solve it and press enter")
+            input()
+
+        # click download button
+        if not search_page.download():
+            self.not_found.append(f"{track.print_artists()} - {track.name}")
+
+        return
 
     # set metadata of mp3 like title, artist, etc.
     def set_metadata(self, track, filename, artwork_file=None):

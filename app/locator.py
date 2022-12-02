@@ -10,4 +10,13 @@ class SearchPageLocators(object):
     PRELOADER = (By.CSS_SELECTOR, "#informer > img")
 
 
+class FreeDownloadSearchPageLocators(object):
+    INPUT = (By.ID, "q")
+    SEARCH_BUTTON = (By.ID, "snd")
+    USE_VPN_CHECKBOX = (By.XPATH, '//*[@id="search"]/div[3]/label')
+    NO_RESULT = (By.XPATH, '//*[@id="results"]/span')
+    FIRST_RESULT_DL_BUTTON = (By.XPATH, '//*[@id="results_t"]/tr/td[3]/a')
+    CAPTCHA = (By.ID, "captcha")
+    DL_BUTTON = (By.XPATH, '/html/body/main/div/div/div/div/div[3]/button')
+
 

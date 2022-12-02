@@ -1,4 +1,6 @@
 import json
+import time
+from pprint import pprint
 
 from track import Track
 from soundcloud import SoundCloud, BasicAlbumPlaylist, BasicTrack, MiniTrack
@@ -104,7 +106,7 @@ class SoundcloudAPI:
             return None
 
 
-# if __name__ == "__main__":
-#     x = SoundcloudAPI()
-#     tracks = x.get_playlist_tracks("")
-#     print(tracks)
+if __name__ == "__main__":
+    x = SoundcloudAPI()
+    tracks = x.get_playlist_tracks("https://soundcloud.com/mj-moebius/sets/download-1")
+    print(tracks)
