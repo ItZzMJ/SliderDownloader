@@ -1,10 +1,11 @@
 class Track:
-    def __init__(self, name, artists, genre=None, artwork_url=None, year=None):
+    def __init__(self, name, artists, genre=None, artwork_url=None, year=None, purchase_url=None):
         self.name = name.replace('"', "")
         self.artists = artists.replace('"', "")
         self.genre = genre.replace('"', "")
         self.artwork_url = artwork_url
         self.year = year
+        self.purchase_url = purchase_url
 
     def get_artists(self):
         return self.artists

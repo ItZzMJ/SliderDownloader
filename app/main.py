@@ -43,7 +43,7 @@ class Main:
                 json.dump(configdata, f, indent=2)
 
         layout = self.get_layout(output_dir, url)
-        window = sg.Window('Slider Downloader v1.3', layout)
+        window = sg.Window('Slider Downloader v1.5', layout)
 
         # Main Loop
         try:

@@ -33,7 +33,7 @@ class Downloader:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("useAutomationExtension", False)
         options.add_experimental_option("excludeSwitches", ["enable-automation", "enable-logging"])
-        options.add_argument("--incognito")
+        #options.add_argument("--incognito")
         # options.add_argument("--user-agent=" + ua)
         # options.add_argument("--window-size=" + res)
         options.add_argument('--ignore-certificate-errors')
@@ -41,9 +41,12 @@ class Downloader:
         options.add_argument("--disable-notifications")
         options.add_argument('--disable-dev-shm-usage')
 
+        # load adBlocker
+        options.add_extension("./extension/uBlockOrigin.crx")
+
         # set output directory
-        # prefs = {"download.default_directory": output_dir}
-        # options.add_experimental_option("prefs", prefs)
+        prefs = {"download.default_directory": output_dir}
+        options.add_experimental_option("prefs", prefs)
 
         # show browser doing its magic
         # if not show_chrome:
@@ -83,7 +86,10 @@ class Downloader:
 
                 # logging.error("append to array")
 
-                self.not_found.append(f"{track.print_artists()} - {track.name}")
+                if track.purchase_url:
+                    self.not_found.append(f"{track.print_artists()} - {track.name} ({track.purchase_url})")
+                else:
+                    self.not_found.append(f"{track.print_artists()} - {track.name}")
                 # logging.error("successfully appended to array")
 
                 self.driver.get(self.url)
@@ -176,41 +182,57 @@ class Downloader:
             to_replace = [
                 "(Original Mix)",
                 "(Extended Mix)",
+                "(Preview)",
+                "(Out Now)"
                 "[", # label shit
             ]
             for replace in to_replace:
-                query = query.split(replace)[0]
+                query = query.split(replace)[0].strip()
 
             success = search_page.search(query)
 
         if not success:
-            self.not_found.append(f"{track.print_artists()} - {track.name}")
+            if track.purchase_url:
+                self.not_found.append(f"{track.print_artists()} - {track.name} ({track.purchase_url})")
+            else:
+                self.not_found.append(f"{track.print_artists()} - {track.name}")
             return
 
         # get download link
         print(f"[LOG] Getting Download link for {track.print_artists()} - {track.name}")
 
+        sleep(random.randint(1000, 3000)/1000)
         dl_link = search_page.get_dl_link()
+        sleep(random.randint(1000, 3000)/1000)
+
 
         if not dl_link:
-            self.not_found.append(f"{track.print_artists()} - {track.name}")
+            print(f"[ERR] No download link found for {track.print_artists()} - {track.name}")
+            if track.purchase_url:
+                self.not_found.append(f"{track.print_artists()} - {track.name} ({track.purchase_url})")
+            else:
+                self.not_found.append(f"{track.print_artists()} - {track.name}")
             return
 
         # download_file
-        print("[LOG] Downloading " + dl_link)
-        driver.get(dl_link)
+        print(f"[LOG] Downloading Track {track.print_artists()} - {track.name}")
 
         sleep(random.randint(1000, 3000) / 1000)
 
         # check for captcha
         if search_page.check_captcha():
             # user input required
-            print("[LOG] Captcha detected, please solve it and press enter")
-            input()
+            print("[LOG] Captcha detected, please solve it in the next 10 seconds")
+            sleep(10)
+            print("[LOG] Continuing..")
 
         # click download button
         if not search_page.download():
-            self.not_found.append(f"{track.print_artists()} - {track.name}")
+            if track.purchase_url:
+                self.not_found.append(f"{track.print_artists()} - {track.name} ({track.purchase_url})")
+            else:
+                self.not_found.append(f"{track.print_artists()} - {track.name}")
+
 
         return
 

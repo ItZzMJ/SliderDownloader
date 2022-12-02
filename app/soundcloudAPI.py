@@ -81,9 +81,11 @@ class SoundcloudAPI:
 
             title = title.replace("()", "").strip(" -|!,")
 
+            purchase_url = track.purchase_url
+
             logging.info(f"[SOUNDCLOUDAPI] Found Track [name={title}, artists={artist}, genre={genre}, artwork_url={artwork_url}, year={year}]")
 
-            songs.append(Track(name=title, artists=artist, genre=genre, artwork_url=artwork_url, year=year))
+            songs.append(Track(name=title, artists=artist, genre=genre, artwork_url=artwork_url, year=year, purchase_url=purchase_url))
 
         return songs
 

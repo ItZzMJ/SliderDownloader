@@ -173,10 +173,17 @@ class FreeDownloadSearchPage(BasePage):
                 lambda driver: driver.find_element(*FreeDownloadSearchPageLocators.FIRST_RESULT_DL_BUTTON))
 
             dl_link.click()
+            print(f"[LOG] Clicked Download Button")
+
+            sleep(random.randint(1000, 3000) / 1000)
+
+            return True
+
 
         except Exception as e:
             print("[ERR] ")
             print(e)
+            return False
 
     def check_captcha(self):
         driver = self.driver
@@ -199,6 +206,8 @@ class FreeDownloadSearchPage(BasePage):
             sleep(random.randint(1000, 3000)/1000)
 
             dl_button.click()
+
+            sleep(random.randint(1000, 3000)/1000)
 
             return True
 
