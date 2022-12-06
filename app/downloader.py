@@ -221,6 +221,8 @@ class Downloader:
 
         # check for captcha
         if search_page.check_captcha():
+            search_page.solve_captcha()
+
             # user input required
             print("[LOG] Captcha detected, please solve it in the next 10 seconds")
             sleep(10)

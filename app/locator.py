@@ -18,5 +18,6 @@ class FreeDownloadSearchPageLocators(object):
     FIRST_RESULT_DL_BUTTON = (By.XPATH, '//*[@id="results_t"]/tr/td[3]/a')
     CAPTCHA = (By.ID, "captcha")
     DL_BUTTON = (By.XPATH, '/html/body/main/div/div/div/div/div[3]/button')
+    CAPTCHA_CLICK = (By.ID, 'recaptcha-anchor')
 
 

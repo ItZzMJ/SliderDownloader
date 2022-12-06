@@ -196,6 +196,9 @@ class FreeDownloadSearchPage(BasePage):
         else:
             return True
 
+    def solve_captcha(self):
+        driver = self.drover
+
     def download(self):
         driver = self.driver
 
